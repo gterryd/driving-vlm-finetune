@@ -1,0 +1,40 @@
+### model
+model_name_or_path: Qwen/Qwen2.5-VL-3B-Instruct # 意思是这里在用哪个模型（从HuggingFace下载）
+image_max_pixels: 65536 # 图片最大像素数（256×256=65536，缩小加速）
+trust_remote_code: true # 允许执行模型自带的代码
+
+### method
+stage: sft # 训练阶段：sft=监督微调（给问答对让模型学）
+do_train: true
+finetuning_type: lora # 用LoRA微调（不是全量微调）
+lora_rank: 16 # LoRA的rank（适配器的"厚度"）
+lora_target: all # 在所有线性层都加LoRA
+quantization_bit: 4 # 量化位数（4=4bit）
+quantization_method: bitsandbytes # 量化方法（bitsandbytes=使用bitsandbytes库）
+
+### dataset
+dataset: driving_sft # 用哪些数据集（LLaMA-Factory自带的示例数据）
+template: qwen2_vl # 用哪个模板（LLaMA-Factory自带的示例模板）
+cutoff_len: 1024 # 截断长度（1024=1024个token）
+max_samples: 1500 # 全量训练（新数据共1197条，设1500确保全用上）
+preprocessing_num_workers: 1 # Windows上多进程会崩，改成1
+dataloader_num_workers: 0 # 数据加载线程数（0=0个线程）
+
+### output
+output_dir: saves/qwen2.5-vl-3b/lora/driving # 训练结果保存到哪
+logging_steps: 5 # 每5步打印一次loss
+save_steps: 100 # 每100步保存一次checkpoint
+plot_loss: true # 训练完画loss曲线
+overwrite_output_dir: true # 覆盖输出目录
+save_only_model: true # 只保存模型
+report_to: none # 不报告到任何地方
+
+### train
+per_device_train_batch_size: 1 # 每次送1条数据进GPU
+gradient_accumulation_steps: 8 # 累积8次梯度再更新（等效batch_size=8）
+learning_rate: 2.0e-4 # 学习率（2.0e-4=0.0002）
+num_train_epochs: 3.0 # 训练3轮
+lr_scheduler_type: cosine # 学习率衰减方式（cosine=余弦衰减）
+warmup_ratio: 0.1 # 前10%的步数用来warmup（学习率从0慢慢升上去）
+fp16: true # 用fp16精度训练（省显存）
+ddp_timeout: 180000000 # 超时时间（180000000=180000000步）

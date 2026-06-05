@@ -1,0 +1,28 @@
+# 模型权重 / 训练产物
+saves/
+output/
+*.pth
+*.safetensors
+*.bin
+
+# 数据集（体积大，需自行下载）
+data/
+*.json
+!configs/*.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# 缓存
+.cache/
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
